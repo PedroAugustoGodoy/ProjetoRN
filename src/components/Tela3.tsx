@@ -1,60 +1,64 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
 
 const Tela3 = ({ navigation }) => {
   const [fipeValue, setFipeValue] = useState('');
-  const [valorInicial, setValorInicial] = useState(0);
-  const [valorDoLance, setValorDoLance] = useState(valorInicial);
+  const [valorInicial, setValorInicial] = useState('');
+  const [valorDoLance, setValorDoLance] = useState('');
 
-  const handlePress = (amount) => {
-    setValorDoLance(valorDoLance + amount);
+  const taxaLeiloeiro = 0.05; // 5%
+  const taxaPatio = 130;
+  const taxaLogistica = 200;
+  const taxaAdministracao = 150;
+
+  useEffect(() => {
+    setValorDoLance(valorInicial);
+  }, [valorInicial]);
+
+  const handleAdicionar300 = () => {
+    setValorDoLance((prevValue) => (parseFloat(prevValue) || 0) + 300);
+  };
+
+  const handleAdicionar500 = () => {
+    setValorDoLance((prevValue) => (parseFloat(prevValue) || 0) + 500);
   };
 
   const handleValorInicialChange = (text) => {
-    const numericValue = parseFloat(text);
-    if (!isNaN(numericValue)) {
-      setValorInicial(numericValue);
-      setValorDoLance(numericValue);
-    }
+    setValorInicial(text);
   };
 
   const calcularTaxaLeiloeiro = () => {
-    return (valorDoLance * 0.05).toFixed(2);
+    return (valorDoLance * taxaLeiloeiro).toFixed(2);
   };
 
   const calcularTaxaPatio = () => {
-    return 1300.00.toFixed(2);
+    return taxaPatio.toFixed(2);
   };
 
   const calcularTaxaLogistica = () => {
-    return 200.00.toFixed(2);
+    return taxaLogistica.toFixed(2);
   };
 
   const calcularTaxaAdministracao = () => {
-    return 150.00.toFixed(2);
+    return taxaAdministracao.toFixed(2);
   };
 
-  const calcularTotalComTaxas = () => {
-    const totalTaxas =
-      parseFloat(calcularTaxaLeiloeiro()) +
-      parseFloat(calcularTaxaPatio()) +
-      parseFloat(calcularTaxaLogistica()) +
-      parseFloat(calcularTaxaAdministracao());
-
-    return (valorDoLance + totalTaxas).toFixed(2);
-  };
-
-  const calcularDiferencaPercentual = () => {
-    const diferencaPercentual = ((calcularTotalComTaxas() - parseFloat(fipeValue)) / parseFloat(fipeValue)) * 100;
-    return diferencaPercentual.toFixed(2);
+  const calcularValorTotalArremate = () => {
+    const valorLance = parseFloat(valorDoLance) || 0;
+    const valorLeiloeiro = valorLance * taxaLeiloeiro;
+    const valorTotal =
+      valorLance + valorLeiloeiro + taxaPatio + taxaLogistica + taxaAdministracao;
+    return valorTotal.toFixed(2);
   };
 
   const avaliarCompra = () => {
-    const totalComTaxas = parseFloat(calcularTotalComTaxas());
-    const diferencaPercentual = ((totalComTaxas - parseFloat(fipeValue)) / parseFloat(fipeValue)) * 100;
+    const diferencaPercentual =
+      ((parseFloat(calcularValorTotalArremate()) - parseFloat(fipeValue)) /
+        parseFloat(fipeValue)) *
+      100;
 
     let mensagem = '';
-    let corSinalizacao = 'yellow'; // Padrão é o amarelo
+    let corSinalizacao = 'yellow'; // Padrão: amarelo
 
     if (diferencaPercentual <= -35) {
       mensagem = 'Boa compra!';
@@ -73,61 +77,56 @@ const Tela3 = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Participar do Leilão</Text>
+      <Text style={styles.header}>Leilão do Bessa</Text>
 
-      {/* Inserir Valor FIPE */}
-      <Text style={styles.label}>FIPE:</Text>
+      <Text>FIPE:</Text>
       <TextInput
         style={styles.input}
-        placeholder="Insira o valor FIPE"
-        onChangeText={(text) => setFipeValue(text)}
+        placeholder="Insira o valor do veículo"
         value={fipeValue}
+        onChangeText={(text) => setFipeValue(text)}
       />
 
-      {/* Inserir Valor Inicial */}
-      <Text style={styles.label}>Valor Inicial:</Text>
+      <Text>Valor Inicial:</Text>
       <TextInput
         style={styles.input}
         placeholder="Insira o valor inicial"
         keyboardType="numeric"
+        value={valorInicial}
         onChangeText={handleValorInicialChange}
-        value={valorInicial.toString()}
       />
 
-      {/* Mostrar Valor do Lance */}
-      <Text style={styles.label}>Valor do Lance:</Text>
-      <Text style={styles.valueText}>{valorDoLance}</Text>
+      <Text>Valor do Lance: {valorDoLance}</Text>
 
-      {/* Botões para adicionar valores */}
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={() => handlePress(300)}>
+        <TouchableOpacity style={styles.button} onPress={handleAdicionar300}>
           <Text style={styles.buttonText}>+300</Text>
         </TouchableOpacity>
 
-        <View style={styles.buttonSpacer} />
-
-        <TouchableOpacity style={styles.button} onPress={() => handlePress(500)}>
+        <TouchableOpacity style={styles.button} onPress={handleAdicionar500}>
           <Text style={styles.buttonText}>+500</Text>
         </TouchableOpacity>
       </View>
+
+      <Text style={styles.resultText}>
+        Valor Total do Arremate: R$ {calcularValorTotalArremate()}
+      </Text>
+
+      {/* Informações sobre as taxas */}
+      <Text style={styles.taxLabel}>Informações sobre as taxas:</Text>
+      <Text style={styles.taxText}>
+        Taxa leiloeiro: 5% do valor do arremate - R$ {calcularTaxaLeiloeiro()}
+      </Text>
+      <Text style={styles.taxText}>Taxa de pátio: R$ {calcularTaxaPatio()}</Text>
+      <Text style={styles.taxText}>Taxa de logística: R$ {calcularTaxaLogistica()}</Text>
+      <Text style={styles.taxText}>
+        Taxa de administração: R$ {calcularTaxaAdministracao()}
+      </Text>
 
       {/* Comparação de compra */}
       <View style={[styles.compraContainer, { backgroundColor: corSinalizacao }]}>
         <Text style={styles.compraText}>{mensagem}</Text>
       </View>
-
-      {/* Diferença de preço em porcentagem */}
-      <Text style={styles.label}>Diferença de preço:</Text>
-      <Text style={styles.valueText}>
-        {((parseFloat(calcularTotalComTaxas()) - parseFloat(fipeValue)) / parseFloat(fipeValue) * 100).toFixed(2)}%
-      </Text>
-
-      {/* Informações sobre as taxas */}
-      <Text style={styles.taxLabel}>Informações sobre as taxas:</Text>
-      <Text style={styles.taxText}>Taxa leiloeiro: 5% do valor do arremate - R${calcularTaxaLeiloeiro()}</Text>
-      <Text style={styles.taxText}>Taxa de pátio: R$ {calcularTaxaPatio()}</Text>
-      <Text style={styles.taxText}>Taxa de logística: R$ {calcularTaxaLogistica()}</Text>
-      <Text style={styles.taxText}>Taxa de administração: R$ {calcularTaxaAdministracao()}</Text>
     </View>
   );
 };
@@ -146,67 +145,65 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
 
-  label: {
-    fontSize: 16,
-    marginTop: 10,
-  },
-
   input: {
     height: 40,
     borderColor: 'gray',
     borderWidth: 1,
+    marginBottom: 10,
     padding: 10,
-    marginTop: 5,
-    marginBottom: 10,
-  },
-
-  valueText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
+    borderRadius: 5,
   },
 
   buttonContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginBottom: 20,
-  },
-
-  buttonSpacer: {
-    width: 10, // Espaçamento entre os botões
+    justifyContent: 'space-between',
+    marginBottom: 10,
   },
 
   button: {
     backgroundColor: '#3498db',
     padding: 10,
     borderRadius: 5,
+    flex: 1,
+    marginHorizontal: 5,
   },
 
   buttonText: {
     color: 'white',
     fontWeight: 'bold',
+    textAlign: 'center',
   },
 
-  taxLabel: {
-    fontSize: 16,
+  resultText: {
     marginTop: 20,
+    fontSize: 16,
     fontWeight: 'bold',
   },
 
+  taxLabel: {
+    marginTop: 20,
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'black',
+  },
+
   taxText: {
-    fontSize: 14,
     marginTop: 5,
+    fontSize: 16,
+    color: 'black',
   },
 
   compraContainer: {
     marginTop: 20,
     padding: 10,
     borderRadius: 5,
-    alignItems: 'center',
   },
 
   compraText: {
-    color: 'black',
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: 'white',
+    textAlign: 'center',
   },
 });
 
