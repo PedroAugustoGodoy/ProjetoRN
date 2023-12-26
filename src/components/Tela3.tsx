@@ -79,10 +79,10 @@ const Tela3 = ({ navigation }) => {
     <View style={styles.container}>
       <Text style={styles.header}>Leilão do Bessa</Text>
 
-      <Text>FIPE:</Text>
+      <Text>Veículo:</Text>
       <TextInput
         style={styles.input}
-        placeholder="Insira o valor do veículo"
+        placeholder="Seleciona o veículo"
         value={fipeValue}
         onChangeText={(text) => setFipeValue(text)}
       />

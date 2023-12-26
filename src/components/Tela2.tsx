@@ -19,6 +19,15 @@ const Tela2 = () => {
     <View style={styles.container}>
       <Text style={styles.header}>Cadastrar Veículo</Text>
 
+      {/* Componente Marca */}
+      <Text style={styles.label}>Marca:</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Insira a marca do veículo"
+        onChangeText={(text) => setModelo(text)}
+        value={modelo}
+      />
+
       {/* Componente Modelo */}
       <Text style={styles.label}>Modelo:</Text>
       <TextInput
@@ -45,6 +54,16 @@ const Tela2 = () => {
         onChangeText={(text) => setCor(text)}
         value={cor}
       />
+
+      {/* Componente Valor */}
+      <Text style={styles.label}>Valor:</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Insira o valor do veículo"
+        onChangeText={(text) => setCor(text)}
+        value={cor}
+      />
+
 
       {/* Botão Salvar */}
       <TouchableOpacity style={styles.button} onPress={handleSalvar}>
